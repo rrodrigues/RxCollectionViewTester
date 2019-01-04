@@ -1,0 +1,6 @@
+framework module Pods_RxCollectionViewTester {
+  umbrella header "Pods-RxCollectionViewTester-umbrella.h"
+
+  export *
+  module * { export * }
+}
