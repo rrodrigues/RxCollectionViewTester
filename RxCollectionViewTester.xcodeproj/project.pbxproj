@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		72C204D821E0E021003F09A4 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72C204D721E0E021003F09A4 /* ViewModel.swift */; };
 		B3C3512521DEB56F009AC5A3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C3512421DEB56F009AC5A3 /* AppDelegate.swift */; };
 		B3C3512721DEB56F009AC5A3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C3512621DEB56F009AC5A3 /* ViewController.swift */; };
 		B3C3512A21DEB56F009AC5A3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B3C3512821DEB56F009AC5A3 /* Main.storyboard */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		72C204D721E0E021003F09A4 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		972E1ADCA05CCA7395450042 /* Pods_RxCollectionViewTester.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RxCollectionViewTester.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9782C688C2D76C1E1D0AB269 /* Pods-RxCollectionViewTester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RxCollectionViewTester.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RxCollectionViewTester/Pods-RxCollectionViewTester.debug.xcconfig"; sourceTree = "<group>"; };
 		B3C3512121DEB56F009AC5A3 /* RxCollectionViewTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RxCollectionViewTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,6 +73,7 @@
 			children = (
 				B3C3512421DEB56F009AC5A3 /* AppDelegate.swift */,
 				B3C3512621DEB56F009AC5A3 /* ViewController.swift */,
+				72C204D721E0E021003F09A4 /* ViewModel.swift */,
 				B3C3512821DEB56F009AC5A3 /* Main.storyboard */,
 				B3C3512B21DEB570009AC5A3 /* Assets.xcassets */,
 				B3C3512D21DEB570009AC5A3 /* LaunchScreen.storyboard */,
@@ -219,6 +222,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3C3512721DEB56F009AC5A3 /* ViewController.swift in Sources */,
+				72C204D821E0E021003F09A4 /* ViewModel.swift in Sources */,
 				B3C3512521DEB56F009AC5A3 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
