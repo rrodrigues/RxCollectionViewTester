@@ -32,6 +32,8 @@ class ViewController: UIViewController {
     
     let bag = DisposeBag()
     
+    let repository = Repository()
+    
     let generateButton = UIButton.withTitle("Generate")
     let showAllButton = UIButton.withTitle("Show All")
     let removeAllButton = UIButton.withTitle("Remove All")
@@ -45,6 +47,7 @@ class ViewController: UIViewController {
     }()
 
     let value = PublishSubject<(id: UUID, value: Int)>()
+    let selectedChanged = PublishSubject<(id: UUID, selected: Bool)>()
     let delete = PublishSubject<UUID>()
 
     override func viewDidLoad() {
@@ -83,22 +86,29 @@ class ViewController: UIViewController {
         // the two lines below are so we can avoid dealing with self in the closure.
         let value = self.value
         let delete = self.delete
-
+        let selectedChanged = self.selectedChanged
+        
         let input = Input(
             value: value,
+            selectedChanged: selectedChanged,
             add: generateButton.rx.tap.asObservable(),
             delete: delete
         )
-        let viewModel = ViewModel(input, initialValues: [])
+        let viewModel = ViewModel(input, refreshTask: self.repository.refreshValues)
 
         viewModel.counters
             .bind(to: collectionView.rx.items(cellIdentifier: CollectionViewCell.identifier, cellType: CollectionViewCell.self)) { index, element, cell in
                 cell.configure(with: { input in
-                    let vm = CellViewModel(input, initialValue: element.value)
+                    let vm = CellViewModel(input, initialValue: element)
                     // Remember the value property tracks the current value of the counter
                     vm.value
                         .map { (id: element.id, value: $0) } // tell the main view model which counter's value this is
                         .bind(to: value)
+                        .disposed(by: cell.bag)
+                    
+                    vm.selectedChanged
+                        .map { (id: element.id, selected: $0)}
+                        .bind(to: selectedChanged)
                         .disposed(by: cell.bag)
 
                     vm.delete
@@ -189,6 +199,7 @@ class CollectionViewCell: UICollectionViewCell {
         let input = CellInput(
             plus: plus.rx.tap.asObservable(),
             minus: minus.rx.tap.asObservable(),
+            select: check.rx.tap.asObservable(),
             delete: delete.rx.tap.asObservable()
         )
         // create the view model from the factory
@@ -196,6 +207,10 @@ class CollectionViewCell: UICollectionViewCell {
         // bind the view model's label property to the label
         viewModel.label
             .bind(to: label.rx.text)
+            .disposed(by: bag)
+        
+        viewModel.selected
+            .bind(to: check.rx.isSelected)
             .disposed(by: bag)
     }
 
