@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import RxCocoa
 
 struct Input {
 	let value: Observable<(id: UUID, value: Int)>
@@ -17,29 +18,30 @@ struct Input {
 }
 
 struct ViewModel {
-	let counters: Observable<[Model]>
+	let counters: Driver<[Model]>
 }
 
 extension ViewModel {
 	private enum Action {
-		case add
+        case add(model: [Model])
 		case value(id: UUID, value: Int)
         case selectedChanged(id: UUID, selected: Bool)
 		case delete(id: UUID)
 	}
-
-	init(_ input: Input, refreshTask: @escaping () -> [Model]) {
-		let addAction = input.add.map { Action.add }
+    
+	init(_ input: Input, refreshTask: @escaping () -> Observable<[Model]>) {
+        let addAction = input.add
+            .flatMapLatest(refreshTask)
+            .map(Action.add)
 		let valueAction = input.value.map(Action.value)
         let selectedChangedAction = input.selectedChanged.map(Action.selectedChanged)
 		let deleteAction = input.delete.map(Action.delete)
         
 		counters = Observable.merge(addAction, valueAction, selectedChangedAction, deleteAction)
-            .startWith(.add)
 			.scan(into: []) { model, new in
 				switch new {
-				case .add:
-                    model = refreshTask()
+                case .add(let values):
+                    model = values
 				case .value(let id, let value):
 					if let index = model.index(where: { $0.id == id }) {
 						model[index].value = value
@@ -53,7 +55,8 @@ extension ViewModel {
 						model.remove(at: index)
 					}
 				}
-		}
+            }
+            .asDriver(onErrorDriveWith: .empty())
 	}
 }
 

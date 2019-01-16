@@ -34,6 +34,8 @@ class ViewController: UIViewController {
     
     let repository = Repository()
     
+    let refreshControl = UIRefreshControl()
+    
     let generateButton = UIButton.withTitle("Generate")
     let showAllButton = UIButton.withTitle("Show All")
     let removeAllButton = UIButton.withTitle("Remove All")
@@ -67,6 +69,7 @@ class ViewController: UIViewController {
         collectionView.contentInset = UIEdgeInsets.all(20)
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.identifier)
         collectionView.delegate = self
+        collectionView.refreshControl = refreshControl
         view.addSubview(collectionView)
         
         stackButtons.snp.makeConstraints { (make) -> Void in
@@ -88,16 +91,22 @@ class ViewController: UIViewController {
         let delete = self.delete
         let selectedChanged = self.selectedChanged
         
+        let addInput = Observable.merge(
+            rx.methodInvoked(#selector(viewWillAppear(_:))).map { _ in },
+            refreshControl.rx.controlEvent(.valueChanged).delay(2, scheduler: MainScheduler.instance).asObservable(),
+            generateButton.rx.tap.asObservable()
+        )
+        
         let input = Input(
             value: value,
             selectedChanged: selectedChanged,
-            add: generateButton.rx.tap.asObservable(),
+            add: addInput,
             delete: delete
         )
         let viewModel = ViewModel(input, refreshTask: self.repository.refreshValues)
 
         viewModel.counters
-            .bind(to: collectionView.rx.items(cellIdentifier: CollectionViewCell.identifier, cellType: CollectionViewCell.self)) { index, element, cell in
+            .drive(collectionView.rx.items(cellIdentifier: CollectionViewCell.identifier, cellType: CollectionViewCell.self)) { index, element, cell in
                 cell.configure(with: { input in
                     let vm = CellViewModel(input, initialValue: element)
                     // Remember the value property tracks the current value of the counter
@@ -119,6 +128,12 @@ class ViewController: UIViewController {
                 })
             }
             .disposed(by: bag)
+        
+        viewModel.counters
+            .map { _ in false}
+            .drive(refreshControl.rx.isRefreshing)
+            .disposed(by: bag)
+        
     }
 }
 

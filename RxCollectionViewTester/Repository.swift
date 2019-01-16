@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import RxSwift
 
 struct Model {
     let id = UUID()
@@ -19,11 +20,17 @@ struct Model {
 }
 
 class Repository {
+    
+    let scheduler = SerialDispatchQueueScheduler(qos: .background)
 
-    func refreshValues() -> [Model] {
-        return (0..<20)
-            .map { _ in Int.random(in: 0..<100) }
-            .map { Model($0) }
+    func refreshValues() -> Observable<[Model]> {
+        let scheduler = self.scheduler
+        return Observable.deferred {
+            let models = (0..<20)
+                .map { _ in Int.random(in: 0..<100) }
+                .map { Model($0) }
+            return .just(models, scheduler: scheduler)
+        }
     }
     
 }
